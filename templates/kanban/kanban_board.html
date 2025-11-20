@@ -1,0 +1,92 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ board.name }} - Kanban Board</title>
+    <link rel="stylesheet" href="{% static 'kanban/css/kanban.css' %}">
+</head>
+<body>
+    <div class="overlay-bg" id="bg-image"></div>
+    
+    <header>
+        <h1>
+            <a href="{% url 'kanban:board_list' %}">
+                <span>D</span><span>jango</span>
+                <span>K</span><span>anban</span>
+                <span>B</span><span>oard</span>
+            </a>
+        </h1>
+        
+        <div id="totalTask">{{ board.get_total_cards }}</div>
+
+        <div id="btns">
+            <div class="btnAdd">
+                <button id="addToDo">&#10010;</button>
+            </div>
+            <div id="deleteItem">
+                <ul id="delete-list" ondrop="dropDelete(event)" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)">
+                </ul>
+            </div>
+        </div>
+        
+        <div class="user-info">
+            <span class="username">{{ user.username }}</span>
+            <span class="separator">|</span>
+            <a href="{% url 'kanban:logout' %}" class="logout-link">Salir</a>
+        </div>
+    </header>
+
+    <div id="myLists">
+        {% for column in board.columns.all %}
+        <div id="col-{{ column.id }}" data-column-id="{{ column.id }}" style="--column-color: {{ column.color|default:'#2a92bf' }};">
+            <h3>{{ column.name }} <span>{{ column.cards.count }}</span></h3>
+            <ul id="ul-{{ column.id }}" class="section" data-column-id="{{ column.id }}" 
+                ondrop="drop(event, this)" 
+                ondragover="allowDrop(event)" 
+                ondragenter="dragEnter(event)" 
+                ondragleave="dragLeave(event)">
+                {% for card in column.cards.all %}
+                <li id="card-{{ card.id }}" 
+                    data-card-id="{{ card.id }}"
+                    data-column-color="{{ column.color|default:'#2a92bf' }}"
+                    draggable="true" 
+                    ondragstart="drag(event)">
+                    <span class="txt" data-card-id="{{ card.id }}">{{ card.description|default:card.title }}</span>
+                    <span class="idTask">{{ card.created_by.username|default:"Sin usuario" }}</span>
+                    <a class="up" href="#" data-card-id="{{ card.id }}"></a>
+                    <a class="down" href="#" data-card-id="{{ card.id }}"></a>
+                    <a class="delete" href="#" data-card-id="{{ card.id }}"></a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- MODAL -->
+    <div id="modalOverlay" onclick="closeModal()"></div>
+    <div id="modalBox">
+        <p id="modalDesc">Describe la tarea...</p>
+        <textarea id="taskText"></textarea>
+        <button id="taskButton" onclick="saveCard()">Ok</button>
+        <span id="modalClose" onclick="closeModal()">Cancelar</span>
+    </div>
+
+    <!-- CONFIRM DELETE -->
+    <div id="confirmDelete"></div>
+    <div id="confirmBox">
+        <p><span id="confirmTitle">LA TAREA</span> SERÁ ELIMINADA...</p>
+        <button id="confirmBtn" onclick="confirmDelete()">ELIMINAR</button>
+        <button id="confirmCls" onclick="cancelDelete()">CANCELAR</button>
+    </div>
+
+    <script>
+        const BOARD_ID = "{{ board.id }}";
+        let currentCardId = null;
+        let cardToDelete = null;
+    </script>
+    <script src="{% static 'kanban/js/kanban.js' %}"></script>
+</body>
+</html>

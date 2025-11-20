@@ -1,0 +1,94 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Proyectos - Django Kanban</title>
+    <link rel="stylesheet" href="{% static 'kanban/css/home.css' %}">
+</head>
+<body>
+    <div class="overlay-bg"></div>
+    
+    <header>
+        <div class="container">
+            <h1>
+                <span>D</span><span>jango</span>
+                <span>K</span><span>anban</span>
+            </h1>
+            <p class="subtitle">Gestión de tareas con Kanban</p>
+            <div class="user-info-header">
+                👤 {{ user.username }} | <a href="{% url 'kanban:logout' %}" class="logout-link-header">Salir</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="projects-header">
+            <h2>Mis Proyectos</h2>
+            <div class="total-boards">{{ boards|length }} proyecto{{ boards|length|pluralize }}</div>
+        </div>
+
+        <div class="projects-grid">
+            {% for board in boards %}
+            <a href="{% url 'kanban:board_detail' board.pk %}" class="project-card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        {% if forloop.counter == 1 %}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="14" width="7" height="7"></rect>
+                            <rect x="3" y="14" width="7" height="7"></rect>
+                        </svg>
+                        {% else %}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 3h18v18H3z"></path>
+                            <path d="M3 9h18"></path>
+                            <path d="M9 21V9"></path>
+                        </svg>
+                        {% endif %}
+                    </div>
+                    <div class="card-stats">
+                        <span class="card-count">{{ board.get_total_cards }}</span>
+                        <span class="card-label">tarea{{ board.get_total_cards|pluralize }}</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h3>{{ board.name }}</h3>
+                    {% if board.description %}
+                    <p class="card-description">{{ board.description }}</p>
+                    {% endif %}
+                    <div class="card-columns">
+                        {% for column in board.columns.all %}
+                        <span class="column-badge">{{ column.name }} ({{ column.cards.count }})</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <span class="view-link">Ver tablero →</span>
+                    <span class="date">{{ board.created_at|date:"d M Y" }}</span>
+                </div>
+            </a>
+            {% empty %}
+            <div class="empty-state">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+                <h3>No hay proyectos todavía</h3>
+                <p>Crea tu primer tablero Kanban para empezar</p>
+            </div>
+            {% endfor %}
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>Django Kanban Board &copy; 2025 | <a href="/api/v1/" class="api-link">🔌 API REST</a></p>
+        </div>
+    </footer>
+</body>
+</html>

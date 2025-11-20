@@ -1,0 +1,27 @@
+/* Kanban Board Styles */
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.column {
+  background: #f7f7f9;
+  border: 1px solid #e5e5ea;
+  border-radius: 8px;
+  padding: 0.75rem;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid #e5e5ea;
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.card.empty {
+  color: #777;
+  font-style: italic;
+}
