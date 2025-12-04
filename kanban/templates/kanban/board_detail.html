@@ -1,0 +1,27 @@
+{% extends 'kanban/base.html' %}
+{% load static %}
+{% block title %}{{ board.name }} - Kanban{% endblock %}
+{% block content %}
+  <h1>{{ board.name }}</h1>
+  {% if board.description %}<p>{{ board.description }}</p>{% endif %}
+
+  <div class="board">
+    {% for column in board.columns.all %}
+      <section class="column">
+        <h3>{{ column.name }}</h3>
+        <ul>
+          {% for card in column.cards.all %}
+            <li class="card">
+              <strong>{{ card.title }}</strong>
+              {% if card.description %}<p>{{ card.description }}</p>{% endif %}
+            </li>
+          {% empty %}
+            <li class="card empty">Sin tarjetas</li>
+          {% endfor %}
+        </ul>
+      </section>
+    {% empty %}
+      <p>Este tablero aún no tiene columnas.</p>
+    {% endfor %}
+  </div>
+{% endblock %}
