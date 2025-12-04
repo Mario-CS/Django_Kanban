@@ -1,74 +1,201 @@
 # Django Kanban Board
 
-Una aplicación de gestión de tareas estilo Kanban construida con Django. Permite crear tableros, columnas y tarjetas para organizar proyectos de manera visual.
+Aplicación Django de tablero Kanban moderno con drag & drop, diseño responsive y soporte táctil para móviles.
 
 ## Características
 
-*   **Gestión de Tableros**: Crea múltiples tableros para diferentes proyectos.
-*   **Columnas Personalizables**: Define los estados de tus tareas (ej. "Por hacer", "En progreso", "Hecho").
-*   **Tarjetas Interactivas**: Crea, edita y mueve tarjetas entre columnas.
-*   **Interfaz Drag & Drop**: Mueve las tareas fácilmente arrastrándolas.
-*   **API REST**: Backend robusto con Django REST Framework.
-*   **Autenticación de Usuarios**: Registro e inicio de sesión seguro.
+✨ **Funcionalidades principales:**
+- 🎯 Drag & drop para mover tarjetas entre columnas (desktop y móvil)
+- ➕ Crear nuevas tarjetas con modal de edición
+- ✏️ Editar tarjetas haciendo clic en ellas
+- 🗑️ Eliminar tarjetas individuales o todas a la vez
+- ⬆️⬇️ Reordenar tarjetas con botones up/down
+- 📊 Contadores de tarjetas por columna y total
+- 🎨 Diseño moderno con gradientes y animaciones
+- 📱 Responsive design optimizado para móviles
+- 👆 Soporte completo para eventos táctiles
 
 ## Requisitos
+- Python 3.10+
+- Django 5.2+
 
-*   Python 3.8+
-*   Django 5.x
+## Instalación en un proyecto nuevo
 
-## Instalación
+### 1. Copiar la aplicación kanban
 
-1.  **Clonar el repositorio:**
+Copia la carpeta `kanban/` completa a tu proyecto Django:
 
-    ```bash
-    git clone https://github.com/Mario-CS/Django_Kanban.git
-    cd Django_Kanban
-    ```
+```bash
+cp -r kanban/ /ruta/a/tu/proyecto/
+```
 
-2.  **Crear y activar un entorno virtual:**
+### 2. Configurar settings.py
 
-    ```bash
-    python3 -m venv .venv
-    source .venv/bin/activate  # En Windows: .venv\Scripts\activate
-    ```
+Añade `kanban` a tus INSTALLED_APPS:
 
-3.  **Instalar dependencias:**
+```python
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'kanban',  # ← Añadir aquí
+]
+```
 
-    ```bash
-    pip install -r requirements.txt
-    ```
+### 3. Configurar URLs
 
-4.  **Aplicar migraciones:**
+En tu archivo principal de URLs (ej: `config/urls.py` o `proyecto/urls.py`):
 
-    ```bash
-    python manage.py migrate
-    ```
+```python
+from django.contrib import admin
+from django.urls import path, include
 
-5.  **Crear un superusuario (opcional):**
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('', include('kanban.urls')),      # ← Vistas del Kanban
+    path('api/', include('kanban.api_urls')),  # ← API endpoints
+]
+```
 
-    ```bash
-    python manage.py createsuperuser
-    ```
+### 4. Aplicar migraciones
 
-6.  **Ejecutar el servidor:**
+```bash
+python manage.py makemigrations kanban
+python manage.py migrate
+```
 
-    ```bash
-    python manage.py runserver
-    ```
+### 5. Crear superusuario (opcional)
 
-    Accede a la aplicación en `http://127.0.0.1:8000/`.
+```bash
+python manage.py createsuperuser
+```
 
-## Estructura del Proyecto
+### 6. Ejecutar servidor
 
-*   `kanban/`: Aplicación principal con modelos, vistas y lógica de negocio.
-*   `config/`: Configuración del proyecto Django.
-*   `templates/`: Plantillas HTML para la interfaz de usuario.
-*   `static/`: Archivos CSS y JavaScript.
+```bash
+python manage.py runserver
+```
 
-## Contribuir
+### 7. Crear tablero y columnas
 
-1.  Haz un Fork del proyecto.
-2.  Crea una rama para tu funcionalidad (`git checkout -b feature/nueva-funcionalidad`).
-3.  Haz Commit de tus cambios (`git commit -m 'Añadir nueva funcionalidad'`).
-4.  Haz Push a la rama (`git push origin feature/nueva-funcionalidad`).
-5.  Abre un Pull Request.
+Accede al admin en http://127.0.0.1:8000/admin/ y crea:
+
+1. Un **Board** (tablero)
+2. **Columnas** para ese tablero (ej: "To Do", "Working", "Done")
+3. Opcionalmente asigna colores a las columnas en formato hex (ej: `#2a92bf`)
+
+O usa el script de datos de prueba (ver sección "Crear datos de prueba" más abajo).
+
+## Instalación en este proyecto
+
+```bash
+# 1) Activar entorno virtual
+source .venv/bin/activate
+
+# 2) Ejecutar servidor (ya instalado y migrado)
+python manage.py runserver
+```
+
+## Crear datos de prueba
+
+```bash
+# Generar tablero con tarjetas de ejemplo
+python create_sample_data.py
+```
+
+## Acceso
+
+- **Lista de tableros**: http://127.0.0.1:8000/
+- **Tablero ejemplo**: http://127.0.0.1:8000/board/1/
+
+## Estructura del proyecto
+
+```
+Django_proyect/
+├── config/              # Configuración del proyecto (antes kanban_project)
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+├── kanban/              # App principal del Kanban
+│   ├── models.py        # Board, Column, Card
+│   ├── views.py         # Vistas + API endpoints
+│   ├── urls.py          # Rutas
+│   ├── admin.py
+│   ├── static/
+│   │   └── kanban/
+│   │       ├── css/
+│   │       │   └── kanban.css    # Estilos del tablero
+│   │       └── js/
+│   │           └── kanban.js     # Drag & drop + CRUD
+│   └── templates/
+│       └── kanban/
+│           ├── board_list.html
+│           └── kanban_board.html # Template principal
+├── manage.py
+├── requirements.txt
+└── create_sample_data.py
+```
+
+## API Endpoints
+
+- `POST /api/board/<board_id>/card/create/` - Crear tarjeta
+- `PUT /api/card/<card_id>/update/` - Actualizar tarjeta
+- `POST /api/card/<card_id>/move/` - Mover tarjeta
+- `DELETE /api/card/<card_id>/delete/` - Eliminar tarjeta
+
+## Uso
+
+### Crear nueva tarjeta
+1. Clic en botón "+" (NEW TASK)
+2. Se abre modal automáticamente
+3. Escribe descripción y clic en "Ok"
+
+### Editar tarjeta
+- Clic en el texto de la tarjeta
+- Modifica en el modal y guarda
+
+### Mover tarjeta
+- Arrastra y suelta en otra columna
+- O usa botones ⬆️ ⬇️ para reordenar
+
+### Eliminar tarjeta
+- Clic en icono 🗑️ de la tarjeta
+- O arrastra a zona "ARRASTRA AQUÍ"
+
+## Admin
+
+Accede al admin de Django para gestionar tableros y columnas:
+
+```bash
+# Crear superusuario
+python manage.py createsuperuser
+
+# Acceder
+http://127.0.0.1:8000/admin/
+```
+
+## Personalización
+
+### Colores (en `kanban/static/kanban/css/kanban.css`)
+
+```css
+:root {
+    --icon-new-task: #2a92bf;    /* To Do */
+    --list-working: #ffc000;      /* Working */
+    --list-done: #00b91f;         /* Done */
+    --icon-remove: #ff6347;       /* Delete */
+    --dark-color: #282828;        /* Header */
+}
+```
+
+### Añadir más columnas
+
+```python
+# En el admin o shell
+from kanban.models import Board, Column
+board = Board.objects.get(id=1)
+Column.objects.create(board=board, name="En Revisión", position=2)
+```
